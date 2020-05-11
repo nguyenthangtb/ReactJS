@@ -11,7 +11,7 @@ class RouteURL extends Component {
                 <Switch>
                     <Route exact path="/" component={Home}/>
                     <Route path="/product" component={Products}/>
-                    <Route path="/edit" component={Edit}/>
+                    <Route path="/edit/:id" component={Edit}/>
                 </Switch>
             </div>
         );
