@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 class Edit extends Component {
 
@@ -57,15 +58,25 @@ class Edit extends Component {
 
     handleOnSubmit(event) {
         event.preventDefault()
-        const { id, name, detail } = this.state;
-        axios.put('http://localhost:8000/api/products/' + id, { id, name, detail })
+
+        const objectData = {
+            id: this.state.id,
+            name: this.state.name,
+            detail: this.state.detail
+        }
+
+        try {
+            axios.put('http://localhost:8000/api/products/' + objectData.id, { objectData })
             .then((result) => {
                 if(result.status === 200){
                     ToastsStore.success('Updated success!');
-                }else{
-                    ToastsStore.success('Updated fail!');
                 }
-            });
+            }).catch((error) => {
+                ToastsStore.error(error.response.data.message);
+            });;
+        } catch (error) {
+            ToastsStore.error('Updated fail!');
+        }
     }
 
     render() {
@@ -74,7 +85,7 @@ class Edit extends Component {
                 <ToastsContainer position={ToastsContainerPosition.TOP_RIGHT} store={ToastsStore} />
                 <Container style={{ marginTop: '30px' }}>
                     <Form onSubmit={this.handleOnSubmit}>
-                        <Form.Control name="id" onChange={this.handleInputChange} value={this.state.id} type="Text" />
+                        <Form.Control name="id" onChange={this.handleInputChange} value={this.state.id} type="hidden" />
                         <Form.Group controlId="formBasicEmail">
                             <Form.Label>Name</Form.Label>
                             <Form.Control name="name" onChange={this.handleInputChange} value={this.state.name} type="Text" placeholder="Enter Name" />
@@ -86,7 +97,11 @@ class Edit extends Component {
                         </Form.Group>
                         <Button variant="primary" type="submit">
                             Update
-                    </Button>
+                        </Button>
+                        { ' ' }
+                        <Button as={Link} to='/product' variant="secondary" type="button">
+                            Cancel
+                        </Button>
                     </Form>
                 </Container>
             </>

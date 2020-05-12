@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Container, Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEye, faEdit, faRecycle } from '@fortawesome/free-solid-svg-icons'
+
+import { Container, Table, Form, Button, DropdownButton, Dropdown, ButtonGroup, Modal, Badge } from 'react-bootstrap';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faEye, faEdit, faRecycle } from '@fortawesome/free-solid-svg-icons'
 
 import { Link } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import axios from 'axios';
 
 import Pagination from 'react-js-pagination';
+import queryString from 'query-string';
+// import View from './View';
 
 class Products extends Component {
 
@@ -19,26 +22,33 @@ class Products extends Component {
             metaData: null,
             current_page: 1,
             per_page: 10,
-            total: 1
-
+            total: 1,
+            filters: {
+                page: 1,
+                like: '',
+                // lt: 'asc',
+                // gt: 'desc',
+            },
+            show: false,
+            modalProd: null
         }
+        this.handleShow = this.handleShow.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
-
-    onClickProduct(id) {
-        console.log(id);
+    componentDidMount() {
+        this.fetchData();
     }
 
-
-    async componentDidMount() {
-        await this.fetchData();
-    }
-
-    async fetchData(pagenumber = 1) {
+    async fetchData() {
         try {
-            const requestUrl = `http://localhost:8000/api/products?page=${pagenumber}`;
+
+            const paramterQuery = queryString.stringify(this.state.filters);
+            const requestUrl = `http://localhost:8000/api/products?${paramterQuery}`;
+
             const response = await fetch(requestUrl);
             const responseJson = await response.json();
+
             this.setState({
                 products: responseJson.data,
                 current_page: responseJson.meta.current_page,
@@ -70,19 +80,74 @@ class Products extends Component {
     }
 
 
+    handleOnFilters(e) {
+
+        const value = e.target.value;
+
+        this.setState({
+            filters: {
+                like: value
+            }
+        })
+        this.fetchData(this.state.filters.like)
+
+    }
+
+    handlePageChange(newPageNumber) {
+        this.setState({
+            filters: {
+                page: newPageNumber,
+            }
+        })
+        this.fetchData(this.state.filters.page);
+    }
+
+    handleClose() {
+        this.setState({
+            show: false
+        })
+    }
+
+    handleShow() {
+        this.setState({
+            show: true
+        })
+    }
+
+    // onClickProduct(id) {
+    //     this.setState({
+    //         show: true
+    //     })
+    // }
+
     render() {
-        //const {} = this.state.metaData;
+        //const { data } = this.state.products;
         return (
             <>
                 <ToastsContainer position={ToastsContainerPosition.TOP_RIGHT} store={ToastsStore} />
+
                 <Container style={{ marginTop: '30px' }}>
+
+                    <Form.Group>
+                        <Form.Control name="_q" onChange={this.handleOnFilters.bind(this)} type="text" placeholder="Search Name" />
+                    </Form.Group>
+
+
+                    <div style={{ marginBottom: '1rem', float: 'right' }}>
+                        <Badge variant="light">({this.state.total} item)</Badge>
+
+                        <Button as={Link} to='/add' variant="primary">
+                            Add New
+                        </Button>
+                    </div>
+
                     <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
-                                <th></th>
+                                <th style={{ width: '100px' }}></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -92,28 +157,47 @@ class Products extends Component {
                                     <td>{item.name}</td>
                                     <td>{item.detail}</td>
                                     <td>
-                                        <i onClick={() => this.onClickProduct(item.id)}><FontAwesomeIcon icon={faEye} /></i>
-                                        <Link to={"/edit/" + item.id}><FontAwesomeIcon icon={faEdit} /></Link>
-                                        <i onClick={() => this.handleDelete(item.id)}><FontAwesomeIcon icon={faRecycle} /></i>
+                                        <DropdownButton as={ButtonGroup} title="Action" id="bg-vertical-dropdown-1">
+                                            <Dropdown.Item onClick={this.handleShow} eventKey={item.id}>View</Dropdown.Item>
+                                            <Dropdown.Item as={Link} to={"/edit/" + item.id} eventKey="2">Edit</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => this.handleDelete(item.id)} eventKey="3">Delete</Dropdown.Item>
+                                        </DropdownButton>
                                     </td>
                                 </tr>
                             ))}
 
                         </tbody>
                     </Table>
+
+
                     <Pagination
                         activePage={this.state.current_page}
                         itemsCountPerPage={this.state.per_page}
                         totalItemsCount={this.state.total}
                         pageRangeDisplayed={10}
-                        onChange={(pagenumber) => this.fetchData(pagenumber)}
+                        //onChange={(pagenumber) => this.fetchData(pagenumber)}
+                        onChange={this.handlePageChange.bind(this)}
                         itemClass="page-item"
                         linkClass="page-link"
                         firstPageText="First"
                         lastPageText="Last"
-
                     />
+
+
                 </Container>
+
+                <Modal show={this.state.show} onHide={this.handleClose} animation={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Test</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Modal body</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
             </>
         );
     }
