@@ -7,14 +7,20 @@ import { Link } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import axios from 'axios';
 
+import Pagination from 'react-js-pagination';
 
 class Products extends Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
             products: [],
+            activePage: 1,
+            metaData: null,
+            current_page: 1,
+            per_page: 10,
+            total: 1
+
         }
     }
 
@@ -24,18 +30,22 @@ class Products extends Component {
     }
 
 
-    componentDidMount() {
-        this.fetchData();
+    async componentDidMount() {
+        await this.fetchData();
     }
 
-    async fetchData() {
+    async fetchData(pagenumber = 1) {
         try {
-            const requestUrl = 'http://localhost:8000/api/products';
+            const requestUrl = `http://localhost:8000/api/products?page=${pagenumber}`;
             const response = await fetch(requestUrl);
             const responseJson = await response.json();
             this.setState({
-                products: responseJson.data
+                products: responseJson.data,
+                current_page: responseJson.meta.current_page,
+                per_page: responseJson.meta.per_page,
+                total: responseJson.meta.total,
             })
+
         } catch (error) {
             console.log('Error', error.message);
         }
@@ -59,7 +69,9 @@ class Products extends Component {
 
     }
 
+
     render() {
+        //const {} = this.state.metaData;
         return (
             <>
                 <ToastsContainer position={ToastsContainerPosition.TOP_RIGHT} store={ToastsStore} />
@@ -89,6 +101,18 @@ class Products extends Component {
 
                         </tbody>
                     </Table>
+                    <Pagination
+                        activePage={this.state.current_page}
+                        itemsCountPerPage={this.state.per_page}
+                        totalItemsCount={this.state.total}
+                        pageRangeDisplayed={10}
+                        onChange={(pagenumber) => this.fetchData(pagenumber)}
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        firstPageText="First"
+                        lastPageText="Last"
+
+                    />
                 </Container>
             </>
         );
