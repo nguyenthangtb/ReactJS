@@ -22,10 +22,14 @@ class Home extends Component {
 
     }
 
-    async fetchUsers(pagenumber = 1) {
-        const requestUrl = `http://localhost:8000/api/users?page=${pagenumber}`;
+    async fetchUsers(pagenumber = 1, limit = 10) {
+        
+        //const per_page = 10;
+        const requestUrl = `http://localhost:8000/api/users?page=${pagenumber}&limit=${limit}`;
+        console.log(requestUrl);
         const res = await fetch(requestUrl);
         const resJson = await res.json();
+        
         this.setState({
             users: resJson.data,
             current_page: resJson.meta.current_page,
@@ -34,7 +38,7 @@ class Home extends Component {
         });
     }
 
-    handleOnFilters(){
+    handleOnFilters() {
         console.log('search')
     }
 
@@ -58,6 +62,10 @@ class Home extends Component {
         })
     }
 
+    handleSelectItem(newItem){
+        this.fetchUsers(1, parseInt(newItem.target.value))
+    }
+
     render() {
         return (
             <div>
@@ -65,12 +73,23 @@ class Home extends Component {
                     <Form.Group>
                         <Form.Control name="_q" onChange={this.handleOnFilters.bind(this)} type="text" placeholder="Search Name" />
                     </Form.Group>
-                    <div style={{ marginBottom: '1rem', float: 'right' }}>
-                        <Badge variant="light">({this.state.total} item)</Badge>
+                    <div style={{marginBottom: '1rem'}}>
+                        <div style={{float: 'left' }}>
+                            <Form.Group controlId="selectItem">
+                                <Form.Control name="slItem" onChange={this.handleSelectItem.bind(this)} as="select" size="sm" custom>
+                                    <option>10</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                </Form.Control>
+                            </Form.Group>
+                        </div>
+                        <div style={{float: 'right' }}>
+                            <Badge variant="light">({this.state.total} item)</Badge>
+                            <Button as={Link} to='/users/add' variant="primary">
+                                Add New
+                            </Button>
+                        </div>
 
-                        <Button as={Link} to='/users/add' variant="primary">
-                            Add New
-                        </Button>
                     </div>
                     <Table striped bordered hover>
                         <thead>
@@ -92,7 +111,7 @@ class Home extends Component {
                         itemsCountPerPage={this.state.per_page}
                         totalItemsCount={this.state.total}
                         pageRangeDisplayed={10}
-                        onChange={(pagenumber) => this.fetchUsers(pagenumber)}
+                        onChange={(pagenumber, limit) => this.fetchUsers(pagenumber, limit)}
                         //onChange={this.handlePageChange.bind(this)}
                         itemClass="page-item"
                         linkClass="page-link"

@@ -9,7 +9,6 @@ class Edit extends Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
         this.state = {
             id: this.props.match.params.id,
             name: '',
