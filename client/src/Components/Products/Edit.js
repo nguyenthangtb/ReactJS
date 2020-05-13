@@ -59,14 +59,16 @@ class Edit extends Component {
     handleOnSubmit(event) {
         event.preventDefault()
 
-        const objectData = {
-            id: this.state.id,
-            name: this.state.name,
-            detail: this.state.detail
-        }
+        // const objectData = {
+        //     id: this.state.id,
+        //     name: this.state.name,
+        //     detail: this.state.detail
+        // }
+
+        const { id, name, detail } = this.state;
 
         try {
-            axios.put('http://localhost:8000/api/products/' + objectData.id, { objectData })
+            axios.put('http://localhost:8000/api/products/' + id, { name, detail })
             .then((result) => {
                 if(result.status === 200){
                     ToastsStore.success('Updated success!');
