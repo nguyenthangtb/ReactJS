@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Container, Table, DropdownButton, Dropdown, ButtonGroup, Form } from 'react-bootstrap';
+import { Container, Table, DropdownButton, Dropdown, ButtonGroup, Form, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
-
 class Home extends Component {
 
 
@@ -20,7 +19,6 @@ class Home extends Component {
 
     componentDidMount() {
         this.fetchUsers();
-        console.log(this.state.users);
 
     }
 
@@ -37,7 +35,7 @@ class Home extends Component {
     }
 
     handleOnFilters(){
-        
+        console.log('search')
     }
 
     renderUser() {
@@ -51,7 +49,7 @@ class Home extends Component {
                     <td style={{ width: '100px' }}>
                         <DropdownButton as={ButtonGroup} title="Action" id="bg-vertical-dropdown-1">
                             <Dropdown.Item onClick={this.handleShow} eventKey={item.id}>View</Dropdown.Item>
-                            <Dropdown.Item as={Link} to={"/edit/" + item.id} eventKey="2">Edit</Dropdown.Item>
+                            <Dropdown.Item as={Link} to={"/users/edit/" + item.id} eventKey="2">Edit</Dropdown.Item>
                             <Dropdown.Item onClick={() => this.handleDelete(item.id)} eventKey="3">Delete</Dropdown.Item>
                         </DropdownButton>
                     </td>
@@ -67,7 +65,13 @@ class Home extends Component {
                     <Form.Group>
                         <Form.Control name="_q" onChange={this.handleOnFilters.bind(this)} type="text" placeholder="Search Name" />
                     </Form.Group>
+                    <div style={{ marginBottom: '1rem', float: 'right' }}>
+                        <Badge variant="light">({this.state.total} item)</Badge>
 
+                        <Button as={Link} to='/users/add' variant="primary">
+                            Add New
+                        </Button>
+                    </div>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
