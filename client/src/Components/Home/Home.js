@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { Container, Table, DropdownButton, Dropdown, ButtonGroup, Form, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+
 import Pagination from 'react-js-pagination';
 import Axios from 'axios';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-class Home extends Component {
+// import Loading from '../Loading/Loading';
 
+
+class Home extends Component {
 
     constructor(props) {
         super(props);
@@ -43,7 +46,7 @@ class Home extends Component {
     handleDelete(id) {
         Axios.delete(`http://localhost:8000/api/users/${id}`)
             .then((res) => {
-                if(res.status === 200){
+                if (res.status === 200) {
                     ToastsStore.success('Deleted user success !');
                     this.fetchUsers(this.state.current_page);
                 }
@@ -56,7 +59,7 @@ class Home extends Component {
         return this.state.users.map(item => {
             return (
                 <tr key={item.id}>
-                    <td>{item.id}</td>
+                    <td><Form.Check type="checkbox" name="ckAll" label="" /></td>
                     <td>{item.name}</td>
                     <td>{item.email}</td>
                     <td>{item.ids_device}</td>
@@ -77,7 +80,7 @@ class Home extends Component {
     }
 
     handleOnFilters(e) {
-        this.fetchUsers(1,this.state.per_page, e.target.value);
+        this.fetchUsers(1, this.state.per_page, e.target.value);
     }
 
     // handleSelectOrder(e){
@@ -88,7 +91,7 @@ class Home extends Component {
         return (
             <div>
                 <Container style={{ marginTop: '30px' }}>
-                    
+
                     <ToastsContainer position={ToastsContainerPosition.TOP_RIGHT} store={ToastsStore} />
 
                     <Form.Group>
@@ -121,7 +124,9 @@ class Home extends Component {
                     <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th>
+                                    <Form.Check type="checkbox" name="ckAll" label="" />
+                                </th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>No.of Device(s)</th>

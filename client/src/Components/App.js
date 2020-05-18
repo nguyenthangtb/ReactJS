@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import Nav from './Nav/MyNav';
 import RouteURL from './RouteURL/RouteURL';
+import './Loading.css'
 
 
 function App() {
@@ -12,7 +13,6 @@ function App() {
         <Nav></Nav>
         <RouteURL></RouteURL>
       </Router>
-
     </div>
   );
 }

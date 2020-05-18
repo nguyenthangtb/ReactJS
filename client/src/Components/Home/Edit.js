@@ -27,9 +27,8 @@ class Edit extends Component {
     componentDidMount() {
         this.getUser();
     }
-
+    
     async getUser() {
-
 
         const requestUrl = `http://localhost:8000/api/users/${this.state.id}`;
         const res = await fetch(requestUrl);
