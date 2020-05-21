@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, Suspense } from 'react';
 import { BrowserRouter as Router } from "react-router-dom";
 
 import Nav from './Nav/MyNav';
@@ -8,12 +8,14 @@ import './Loading.css'
 
 function App() {
   return (
-    <div>
-      <Router>
-        <Nav></Nav>
-        <RouteURL></RouteURL>
-      </Router>
-    </div>
+    <Fragment>
+      <Suspense fallback="loading">
+        <Router>
+          <Nav></Nav>
+          <RouteURL></RouteURL>
+        </Router>
+      </Suspense>
+    </Fragment>
   );
 }
 
